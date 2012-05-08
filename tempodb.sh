@@ -38,6 +38,26 @@ function tempo-write-to-key {
   tempo-make-request "/series/key/$1/data/" "[{\"t\": \"$timestamp\", \"v\": \"$2\"}"
 }
 
+# Read the last <n> minutes of a series
+# Args:
+# - id of series
+# - number of minutes to look back
+function tempo-read-from-id {
+  past_timestamp=$(date -v-$2M "+%Y-%m-%dT%H:%M:%S.000%z")
+  current_timestamp=$(date "+%Y-%m-%dT%H:%M:%S.000%z")
+  tempo-make-request "/series/id/$1/data/?start=$past_timestamp&end=$current_timestamp"
+}
+
+# Read the last <n> minutes of a series
+# Args:
+# - key of series
+# - number of minutes to look back
+function tempo-read-from-key {
+  past_timestamp=$(date -v-$2M "+%Y-%m-%dT%H:%M:%S.000%z")
+  current_timestamp=$(date "+%Y-%m-%dT%H:%M:%S.000%z")
+  tempo-make-request "/series/key/$1/data/?start=$past_timestamp&end=$current_timestamp"
+}
+
 function tempo-make-request {
   curl_opts="-g -u $TEMPODB_API_KEY:$TEMPODB_API_SECRET"
   if [ "$2" ]
