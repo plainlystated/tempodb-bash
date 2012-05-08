@@ -4,14 +4,28 @@
 #TEMPODB_API_KEY=yourkey
 #TEMPODB_API_SECRET=yoursecret
 
-TEMPODB_VERBOSE=false
+#TEMPODB_VERBOSE=true
 
+# List available series
 function tempo-list-series {
   tempo-make-request "/series"
 }
 
+# Create a new series.
+# Args:
+# - name (key) of the series [OPTIONAL]
 function tempo-create-series {
   tempo-make-request "/series" "{\"key\": \"$1\"}"
+}
+
+# Write a record to a series
+# Args:
+# - id of series
+# - value
+# Note: values get the current timestamp
+function tempo-write-to-id {
+  timestamp=$(date "+%Y-%m-%dT%H:%M:%S.000%z")
+  tempo-make-request "/series/id/$1/data/" "[{\"t\": \"$timestamp\", \"v\": \"$2\"}"
 }
 
 function tempo-make-request {
@@ -25,7 +39,7 @@ function tempo-make-request {
 
   if $TEMPODB_VERBOSE
   then
-    curl_opts="$curl_opts -D -"
+    curl_opts="$curl_opts -D - -v"
   fi
 
   if [ "$data" ]
