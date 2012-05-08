@@ -28,6 +28,16 @@ function tempo-write-to-id {
   tempo-make-request "/series/id/$1/data/" "[{\"t\": \"$timestamp\", \"v\": \"$2\"}"
 }
 
+# Write a record to a series
+# Args:
+# - name (key) of series
+# - value
+# Note: values get the current timestamp
+function tempo-write-to-key {
+  timestamp=$(date "+%Y-%m-%dT%H:%M:%S.000%z")
+  tempo-make-request "/series/key/$1/data/" "[{\"t\": \"$timestamp\", \"v\": \"$2\"}"
+}
+
 function tempo-make-request {
   curl_opts="-g -u $TEMPODB_API_KEY:$TEMPODB_API_SECRET"
   if [ "$2" ]
